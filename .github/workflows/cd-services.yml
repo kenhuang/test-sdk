@@ -60,7 +60,7 @@ jobs:
           git remote add test-sdk git@github.com:kenhuang/test-sdk.git
           git config --global user.email "dev@mattr.global"
           git config --global user.name "mattrglobal-dev"
-          git push -u test-sdk main -f
+          git push -u test-sdk main -f || true
 
 #      - uses: 8398a7/action-slack@v3
 #        name: Slack notification
