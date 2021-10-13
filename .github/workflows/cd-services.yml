@@ -18,7 +18,7 @@ jobs:
           # trigger subsequent workflows
           token: ${{ secrets.GH_TOKEN }}
           ref: 'release'
-          fetch-depth: 0
+          fetch-depth: '0'
 
 #      - name: Get branch name
 #        id: BRANCH_NAME
@@ -42,10 +42,10 @@ jobs:
 #        # Needed for release process changelog generation
 #        run: git fetch --prune --unshallow
 
-      - name: Verify
-        run: |
-          git fetch --depth=1 origin +refs/tags/*:refs/tags/*
-          git tag --points-at HEAD | grep release
+#      - name: Verify
+#        run: |
+#          git fetch --depth=1 origin +refs/tags/*:refs/tags/*
+#          git tag --points-at HEAD | grep release
 
 
 #      - name: Install SSH key
