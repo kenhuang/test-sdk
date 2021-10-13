@@ -18,37 +18,48 @@ jobs:
           # trigger subsequent workflows
           token: ${{ secrets.GH_TOKEN }}
           ref: 'release'
+          fetch-depth: 0
 
-      - name: Get branch name
-        id: BRANCH_NAME
-        shell: bash
-        # Workflow is triggered by pushing a tag, this step identifies the branch the tag belongs to
-        run: |
-          git fetch --prune --unshallow
-          raw="$(git branch -r --contains ${{ github.ref }} --points-at HEAD)"
-          branch="${raw//[[:space:]]/}"
-          echo ::set-output name=value::${branch#origin/}
+#      - name: Get branch name
+#        id: BRANCH_NAME
+#        shell: bash
+#        # Workflow is triggered by pushing a tag, this step identifies the branch the tag belongs to
+#        run: |
+#          git fetch --prune --unshallow
+#          raw="$(git branch -r --contains ${{ github.ref }} --points-at HEAD)"
+#          branch="${raw//[[:space:]]/}"
+#          echo ::set-output name=value::${branch#origin/}
+#
+#      - name: Checkout tagged branch
+#        uses: actions/checkout@v2
+#        with:
+#          # Must checkout using ci user personal access token in GH_TOKEN so that last step can commit and
+#          # trigger subsequent workflows
+#          token: ${{ secrets.GH_TOKEN }}
+#          ref: ${{ steps.BRANCH_NAME.outputs.value }}
 
-      - name: Checkout tagged branch
-        uses: actions/checkout@v2
-        with:
-          # Must checkout using ci user personal access token in GH_TOKEN so that last step can commit and
-          # trigger subsequent workflows
-          token: ${{ secrets.GH_TOKEN }}
-          ref: ${{ steps.BRANCH_NAME.outputs.value }}
-
-      - name: Fetch all
-        # Needed for release process changelog generation
-        run: git fetch --prune --unshallow
+#      - name: Fetch all
+#        # Needed for release process changelog generation
+#        run: git fetch --prune --unshallow
 
       - name: Verify
         run: |
           git fetch --depth=1 origin +refs/tags/*:refs/tags/*
           git tag --points-at HEAD | grep release
 
+
+#      - name: Install SSH key
+#        uses: shimataro/ssh-key-action@v2
+#        with:
+#          key: ${{ secrets.SSH_PRIVATE_KEY }}
+#          name: id_rsa # optional
+#          known_hosts: ${{ secrets.KNOWN_HOSTS }}
+
       - name: Sync Github repo
         run: |
-          git remote add test-sdk git@github.com:minhealthnz/test-sdk.git
+          git remote add test-sdk git@github.com:kenhuang/test-sdk.git
+          git config --global user.email "dev@mattr.global"
+          git config --global user.name "mattrglobal-dev"
           git push -u test-sdk main
 
 #      - uses: 8398a7/action-slack@v3
