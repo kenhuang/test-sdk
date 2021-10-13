@@ -1,0 +1,23 @@
+{
+  "name": "private-test-sdk",
+  "version": "0.3.0",
+  "description": "## release ```bash git checkout main git fetch --all git reset --hard origin/main",
+  "main": "index.js",
+  "scripts": {
+    "release": "release-it",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kenhuang/private-test-sdk.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/kenhuang/private-test-sdk/issues"
+  },
+  "homepage": "https://github.com/kenhuang/private-test-sdk#readme",
+  "devDependencies": {
+    "release-it": "14.11.6"
+  }
+}
