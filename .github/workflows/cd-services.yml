@@ -16,7 +16,7 @@ jobs:
         with:
           # Must checkout using ci user personal access token in GH_TOKEN so that last step can commit to master and
           # trigger subsequent workflows
-          token: ${{ secrets.GH_TOKEN }}
+#          token: ${{ secrets.GH_TOKEN }}
           ref: 'release'
 
       - name: Get branch name
