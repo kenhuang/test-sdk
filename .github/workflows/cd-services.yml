@@ -1,0 +1,63 @@
+name: cd-services
+
+on:
+  push:
+    tags:
+      - "release" # Must match Verify step
+
+jobs:
+  build:
+    name: Push docker image
+    runs-on: ubuntu-18.04
+    timeout-minutes: 10 # when change this consider credential duration too, see role-duration-seconds
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          # Must checkout using ci user personal access token in GH_TOKEN so that last step can commit to master and
+          # trigger subsequent workflows
+          token: ${{ secrets.GH_TOKEN }}
+          ref: 'release'
+
+      - name: Get branch name
+        id: BRANCH_NAME
+        shell: bash
+        # Workflow is triggered by pushing a tag, this step identifies the branch the tag belongs to
+        run: |
+          git fetch --prune --unshallow
+          raw="$(git branch -r --contains ${{ github.ref }} --points-at HEAD)"
+          branch="${raw//[[:space:]]/}"
+          echo ::set-output name=value::${branch#origin/}
+
+      - name: Checkout tagged branch
+        uses: actions/checkout@v2
+        with:
+          # Must checkout using ci user personal access token in GH_TOKEN so that last step can commit and
+          # trigger subsequent workflows
+          token: ${{ secrets.GH_TOKEN }}
+          ref: ${{ steps.BRANCH_NAME.outputs.value }}
+
+      - name: Fetch all
+        # Needed for release process changelog generation
+        run: git fetch --prune --unshallow
+
+      - name: Verify
+        run: |
+          git fetch --depth=1 origin +refs/tags/*:refs/tags/*
+          git tag --points-at HEAD | grep release
+
+      - name: Sync Github repo
+        run: |
+          git remote add test-sdk git@github.com:minhealthnz/test-sdk.git
+          git push -u test-sdk main
+
+#      - uses: 8398a7/action-slack@v3
+#        name: Slack notification
+#        if: failure()
+#        with:
+#          status: ${{ job.status }}
+#          fields: repo,commit,message,author,ref,workflow
+#          mention: here
+#          if_mention: failure,cancelled
+#        env:
+#          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_NOTIFICATIONS_WEBHOOK_URL }}
